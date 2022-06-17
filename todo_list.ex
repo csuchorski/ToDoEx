@@ -1,8 +1,9 @@
 defmodule ToDoList do
   def start() do
     filename = IO.gets("Input file name: ") |> String.trim()
-    read_file(filename)
-    # show_help()
+    parsed_data = read_file(filename)
+    show_help()
+    get_command(parsed_data)
   end
 
   def read_file(filename) do
@@ -39,8 +40,17 @@ defmodule ToDoList do
     end)
   end
 
-  def show_tasks() do
-    # Lists all tasks
+  def show_tasks(data) do
+    items = Map.keys(data)
+    Enum.each(items, fn x -> IO.puts(x) end)
+  end
+
+  def show_details(name, data) do
+    if name in Map.keys(data) do
+      IO.inspect(data[name])
+    else
+      IO.puts("Item not in the list")
+    end
   end
 
   def create_task() do
@@ -61,41 +71,57 @@ defmodule ToDoList do
 
   def show_help() do
     IO.puts(~S"Available commands:\n
-        c ->create new task\n
-        d ->delete existing task
-        l ->list all existing tasks
-        s ->save tasks to a file
+        cr ->create new task\n
+        dt ->show details of a task
+        del ->delete existing task
+        ls ->list all existing tasks
+        u ->update existing task
+        sv ->save tasks to a file
         h ->show all commands
+        q ->exit app
         ")
-    get_command()
   end
 
-  def get_command() do
+  def get_command(data) do
     command = IO.gets("Input command: ") |> String.trim()
 
     case command do
-      "c" ->
+      "cr" ->
         create_task()
+        get_command(data)
 
-      "d" ->
+      "dt" ->
+        name = IO.gets("Input name of task: ") |> String.trim()
+        show_details(name, data)
+        get_command(data)
+
+      "del" ->
         delete_task()
+        get_command(data)
 
-      "l" ->
-        show_tasks()
+      "ls" ->
+        show_tasks(data)
+        get_command(data)
 
       "u" ->
         update_task()
+        get_command(data)
 
-      "s" ->
+      "sv" ->
         save_tasks()
+        get_command(data)
 
       "h" ->
         show_help()
+        get_command(data)
+
+      "q" ->
+        {:ok, "App closed"}
 
       _ ->
         IO.puts("Please input correct command.\n")
         show_help()
-        get_command()
+        get_command(data)
     end
   end
 end
