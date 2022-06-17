@@ -17,11 +17,26 @@ defmodule ToDoList do
   end
 
   def parse_file(content) do
-    lines = String.split(content, ~r(\r\n|\r|\n))
+    [header | lines] = String.split(content, ~r(\r\n|\r|\n))
+    titles = header |> String.split(",") |> tl
+    parse_lines(titles, lines)
   end
 
   def parse_lines(titles, lines) do
-    # Parses separate lines into fields
+    Enum.reduce(lines, %{}, fn line, result ->
+      # Split name of todo and other fields
+      [name | fields] = String.split(line, ",")
+      # Check if line contains all needed data
+      if Enum.count(titles) == Enum.count(fields) do
+        # Make every todo into a separate map with titles as keys to fields
+        fields_mapped = Enum.zip(titles, fields) |> Enum.into(%{})
+        # Merge small maps into one big result map with names of todo as key
+        Map.merge(result, %{name => fields_mapped})
+      else
+        # If it doesn't contain all needed fields -> skip the row
+        result
+      end
+    end)
   end
 
   def show_tasks() do
