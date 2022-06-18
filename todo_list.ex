@@ -43,6 +43,8 @@ defmodule ToDoList do
   def show_tasks(data) do
     items = Map.keys(data)
     Enum.each(items, fn x -> IO.puts(x) end)
+
+    get_command(data)
   end
 
   def show_details(name, data) do
@@ -51,21 +53,34 @@ defmodule ToDoList do
     else
       IO.puts("Item not in the list")
     end
+
+    get_command(data)
   end
 
-  def create_task() do
+  def create_task(data) do
     # Adds new tasks
   end
 
-  def delete_task() do
-    # Delete specific task
+  def delete_task(data) do
+    task_name =
+      IO.gets("Input name of task you want to delete: ")
+      |> String.trim()
+
+    if Map.has_key?(data, task_name) do
+      changed_data = Map.drop(data, [task_name])
+      show_tasks(changed_data)
+      get_command(changed_data)
+    else
+      IO.puts("Task doesn't exist")
+      get_command(data)
+    end
   end
 
-  def update_task() do
+  def update_task(data) do
     # Update specific task
   end
 
-  def save_tasks() do
+  def save_tasks(data) do
     # Save changes to the file
   end
 
@@ -87,33 +102,26 @@ defmodule ToDoList do
 
     case command do
       "cr" ->
-        create_task()
-        get_command(data)
+        create_task(data)
 
       "dt" ->
         name = IO.gets("Input name of task: ") |> String.trim()
         show_details(name, data)
-        get_command(data)
 
       "del" ->
-        delete_task()
-        get_command(data)
+        delete_task(data)
 
       "ls" ->
         show_tasks(data)
-        get_command(data)
 
       "u" ->
-        update_task()
-        get_command(data)
+        update_task(data)
 
       "sv" ->
-        save_tasks()
-        get_command(data)
+        save_tasks(data)
 
       "h" ->
         show_help()
-        get_command(data)
 
       "q" ->
         {:ok, "App closed"}
