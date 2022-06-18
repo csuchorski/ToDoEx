@@ -58,7 +58,13 @@ defmodule ToDoList do
   end
 
   def create_task(data) do
-    # Adds new tasks
+    name = IO.gets("Input name of task: ") |> String.trim()
+    priority = IO.gets("Input task priority: ") |> String.trim()
+    date = IO.gets("Input date: ") |> String.trim()
+    notes = IO.gets("Input notes: ") |> String.trim()
+
+    changed_data = Map.put_new(data, name, %{Priority: priority, Date: date, Notes: notes})
+    get_command(changed_data)
   end
 
   def delete_task(data) do
