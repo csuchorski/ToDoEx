@@ -14,6 +14,7 @@ defmodule ToDoList do
 
       {:error, error} ->
         IO.puts("Error while loading file: #{error}")
+        IO.gets("Input file name correctly: ") |> String.trim() |> read_file()
     end
   end
 
@@ -84,6 +85,20 @@ defmodule ToDoList do
 
   def update_task(data) do
     # Update specific task
+    task_to_change = IO.gets("Input name of task you want to update: ") |> String.trim()
+    priority_new = IO.gets("Input priority: ") |> String.trim()
+    date_new = IO.gets("Input date: ") |> String.trim()
+    notes_new = IO.gets("Input notes: ") |> String.trim()
+
+    new_line =
+      data[task_to_change]
+      |> Map.replace!("Priority", priority_new)
+      |> Map.replace!("Date", date_new)
+      |> Map.replace!("Notes", notes_new)
+
+    updated_data = Map.replace!(data, task_to_change, new_line)
+
+    get_command(updated_data)
   end
 
   def save_tasks(data) do
@@ -128,6 +143,7 @@ defmodule ToDoList do
 
       "h" ->
         show_help()
+        get_command(data)
 
       "q" ->
         {:ok, "App closed"}
@@ -135,7 +151,6 @@ defmodule ToDoList do
       _ ->
         IO.puts("Please input correct command.\n")
         show_help()
-        get_command(data)
     end
   end
 end
