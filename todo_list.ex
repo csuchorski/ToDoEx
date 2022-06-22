@@ -1,20 +1,23 @@
 defmodule ToDoList do
   def start() do
-    filename = IO.gets("Input file name: ") |> String.trim()
-    parsed_data = read_file(filename)
+    parsed_data = read_file()
     show_help()
     get_command(parsed_data)
   end
 
-  def read_file(filename) do
+  def read_file() do
     # Opens a file
+    filename = IO.gets("Input file name: ") |> String.trim()
+
     case File.read(filename) do
       {:ok, content} ->
         parse_file(content |> String.replace_prefix("\uFEFF", ""))
 
       {:error, error} ->
         IO.puts("Error while loading file: #{error}")
-        IO.gets("Input file name correctly: ") |> String.trim() |> read_file()
+        IO.puts("Input file name correctly: ")
+
+        read_file()
     end
   end
 
@@ -113,6 +116,7 @@ defmodule ToDoList do
         ls ->list all existing tasks
         u ->update existing task
         sv ->save tasks to a file
+        r ->load different file
         h ->show all commands
         q ->exit app
         ")
@@ -144,6 +148,10 @@ defmodule ToDoList do
       "h" ->
         show_help()
         get_command(data)
+
+      "r" ->
+        new_data = read_file()
+        get_command(new_data)
 
       "q" ->
         {:ok, "App closed"}
