@@ -67,7 +67,9 @@ defmodule ToDoList do
     date = IO.gets("Input date: ") |> String.trim()
     notes = IO.gets("Input notes: ") |> String.trim()
 
-    changed_data = Map.put_new(data, name, %{Priority: priority, Date: date, Notes: notes})
+    changed_data =
+      Map.put_new(data, name, %{"Priority" => priority, "Date" => date, "Notes" => notes})
+
     get_command(changed_data)
   end
 
@@ -106,6 +108,36 @@ defmodule ToDoList do
 
   def save_tasks(data) do
     # Save changes to the file
+    # IO.gets("Input path to file: ")
+    # |> String.trim()
+    # |> File.write()
+
+    headers = "Item,Priority,Date,Notes\n"
+    File.write!("./test.csv", headers)
+    fields = Map.keys(data)
+
+    Enum.each(fields, fn name_key ->
+      priority =
+        data
+        |> Map.get(name_key)
+        |> Map.get("Priority")
+
+      date =
+        data
+        |> Map.get(name_key)
+        |> Map.get("Date")
+
+      notes =
+        data
+        |> Map.get(name_key)
+        |> Map.get("Notes")
+
+      line = [name_key, priority, date, notes] |> Enum.join(",")
+
+      File.write!("./test.csv", line <> "\n", [:append])
+    end)
+
+    get_command(data)
   end
 
   def show_help() do
