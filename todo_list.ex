@@ -108,12 +108,12 @@ defmodule ToDoList do
 
   def save_tasks(data) do
     # Save changes to the file
-    # IO.gets("Input path to file: ")
-    # |> String.trim()
-    # |> File.write()
+    path =
+      IO.gets("Input path to file: ")
+      |> String.trim()
 
     headers = "Item,Priority,Date,Notes\n"
-    File.write!("./test.csv", headers)
+    File.write!(path, headers)
     fields = Map.keys(data)
 
     Enum.each(fields, fn name_key ->
@@ -134,7 +134,7 @@ defmodule ToDoList do
 
       line = [name_key, priority, date, notes] |> Enum.join(",")
 
-      File.write!("./test.csv", line <> "\n", [:append])
+      File.write!(path, line <> "\n", [:append])
     end)
 
     get_command(data)
@@ -191,6 +191,7 @@ defmodule ToDoList do
       _ ->
         IO.puts("Please input correct command.\n")
         show_help()
+        get_command(data)
     end
   end
 end
